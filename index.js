@@ -1,43 +1,47 @@
-const express = require('express');
-const app = express();
+const path = require('path');
 const http = require('http');
+const express = require('express');
+const socketio = require('socket.io');
+const formatMessage = require('./utils/messages');
+const {userJoin, getCurrentUser, userLeave, getRoomUsers} = require('./utils/users');
+
+const app = express();
 const server = http.createServer(app);
-const { Server } = require("socket.io");
-const io = new Server(server);
+const io = socketio(server);
 
-var contador = 0;
+app.use(express.static(path.join(__dirname, 'public')));
 
+const botName = 'BotWhatsapp';
 
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html');
-});
-
-app.use(express.static('public'));
-
-
-
-io.on('connection', (socket) => {
-  console.log('a user connected');
-  contador++;
-  console.log("Hay "+contador+" usuarios");
-
-
-  socket.on('logueo', (msg)=>{
-    console.log("Me has mandado un correo "+msg);
-    socket.broadcast.emit("msg_chat",msg);
+//Se conecta el cliente
+io.on('connection', socket => {
+  socket.on('joinRoom', ({ username, room, avatar }) => {
+    const user = userJoin(socket.id, username, room, avatar);
+    socket.join(user.room);
+    socket.broadcast.to(user.room).emit('message', formatMessage(botName, `${user.username} se ha unido a la sala`));
+    io.to(user.room).emit('roomUsers', {room: user.room,users: getRoomUsers(user.room),avatar: user.avatar});
   });
 
+  //Cuando recibe un mensaje
+  socket.on('chatMessage', msg => {
+    const user = getCurrentUser(socket.id);
+    io.to(user.room).emit('message', formatMessage(user.username, msg));
+    console.log("Mensaje recibido" + msg);
+  });
 
+  //muestra cuando un usuario se desconecta
   socket.on('disconnect', () => {
-    console.log('user disconnected');
-    contador--;
-    console.log("Hay "+contador+" usuarios");
+    const user = userLeave(socket.id);
+    if (user) {
+      io.to(user.room).emit('message', formatMessage(botName, `${user.username} ha salido de la sala`));
+      io.to(user.room).emit('roomUsers', {
+        room: user.room,
+        users: getRoomUsers(user.room)
+      });
+    }
   });
-  
 });
 
+const PORT = process.env.PORT || 3000;
 
-
-server.listen(3000, () => {
-  console.log('listening on *:3000');
-});
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));

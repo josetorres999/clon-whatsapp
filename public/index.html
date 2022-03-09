@@ -4,25 +4,41 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    
+    <title>Whatsapp Dos</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="icon" type="image/x-icon" href="./img/favicon.ico">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="main.js"></script>
 </head>
 <body>
-    <h1>Prueba</h1>
-
-    <button onclick="enviar()">Enviar mensaje</button>
-
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        var socket = io();
-        function enviar(){
-            console.log("enviar");
-            socket.emit('logueo', "Primer mensaje");
-        }
-
-        socket.on('msg_chat',(msg)=>{
-            alert(msg);
-        });
-    </script>
+    <div class="contenedor-login">
+        
+        
+        
+        <main class="login">
+            <h1>Whatsapp 2</h1>
+            <form action="chat.html">
+                <div class="form-login">
+                    <label for="username">Usuario</label>
+                    <input type="text" name="username" id="username" placeholder="Introduce tu nombre" required/>
+                </div>
+                <div class="form-login">
+                    <label for="room">Selecciona una sala</label>
+                    <select name="room" id="room">
+                        <option value="Chat1">Juegos</option>
+                        <option value="Chat2">Pelis</option>
+                        <option value="Chat3">Series</option>
+                    </select>
+                </div>
+                <div>
+                    <h3>Avatar</h3>
+                    <input type="radio" name="Avatar" value="hombre.jpg"><img id="hombre" src="./img/hombre.jpg">
+                    <br>
+                    <input type="radio" name="Avatar" value="mujer.jpg" checked><img id="mujer" src="./img/mujer.jpg">
+                </div>
+                <button type="submit" class="btn">Entrar al chat</button>
+            </form>
+        </main>
+    </div>
 </body>
 </html>

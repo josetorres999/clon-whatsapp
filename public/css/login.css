@@ -1,0 +1,29 @@
+*{
+    margin-bottom: 4vh;
+}
+
+img{
+    width: 75px;
+    height: 75px;
+}
+
+#contenedor-login{
+    width: 25vw;
+    height: 70vh;
+    margin:auto;
+    margin-top: 10vh;
+    border:solid black 1px;
+    display: flex; 
+    align-items: center;
+    flex-direction: column;
+}
+
+#login, button{
+    font-size: 20px;
+}
+
+h1{
+    font-weight: bolder;
+    font-size: 35px;
+}
+
